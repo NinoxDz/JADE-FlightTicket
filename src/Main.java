@@ -16,15 +16,15 @@ public class Main {
 		//for(int i=0; i<6;i++){
 		AgentController ac;
 		try {
-			ac=cc.createNewAgent("Agent1", "TicketTrading.Seller", null);
+			ac=cc.createNewAgent("Seller-1", "TicketTrading.Seller", null);
 			ac.start();
-			ac=cc.createNewAgent("Agent2", "TicketTrading.Seller", null);
+			ac=cc.createNewAgent("Seller-2", "TicketTrading.Seller", null);
 			ac.start();
-			ac=cc.createNewAgent("Agent3", "TicketTrading.Seller", null);
+			ac=cc.createNewAgent("Seller-3", "TicketTrading.Seller", null);
 			ac.start();
-			ac=cc.createNewAgent("Agent4", "TicketTrading.Buyer", null);
+			ac=cc.createNewAgent("Buyer-1", "TicketTrading.Buyer", null);
 			ac.start();
-			ac=cc.createNewAgent("Agent5", "TicketTrading.Buyer", null);
+			ac=cc.createNewAgent("Buyer-2", "TicketTrading.Buyer", null);
 			ac.start();
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block

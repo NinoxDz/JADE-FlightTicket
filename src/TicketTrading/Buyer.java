@@ -50,7 +50,7 @@ public class Buyer extends Agent {
 
 			// Add a TickerBehaviour that schedules a request to seller agents every minute
 			
-			addBehaviour(new TickerBehaviour(this, 15000) {
+			addBehaviour(new TickerBehaviour(this, 1500) {
 				
 				protected void onTick() {
 					
@@ -118,13 +118,14 @@ public class Buyer extends Agent {
 	private class RequestPerformer extends Behaviour {
 		private AID bestSeller; // The agent who provides the best offer 
 		private int bestPrice; 
-		private ACLMessage reply2;
 		private int nbestPrice; // The best offered price
 		private int repliesCnt = 0; // The counter of replies from seller agents
 		private MessageTemplate mt;
 		private MessageTemplate mt1;// The template to receive replies
 		private int step = 0;
 		int i=0;
+		private ACLMessage reply2;
+		
 		public void action() {
 			switch (step) {
 			case 0:
@@ -134,13 +135,15 @@ public class Buyer extends Agent {
 					cfp.addReceiver(sellerAgents[i]);
 				} 
 				cfp.setContent(t2);
-				cfp.setConversationId("book-trade");
+				cfp.setConversationId("Ticket-selling");
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+				myAgent.send(cfp);
+				
 				System.out.println("Buyer: hello, i want to buy ticket "+t2+" do you have it?");
 
-				myAgent.send(cfp);
+				
 				// Prepare the template to get proposals
-				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("book-trade"),
+				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Ticket-selling"),
 						MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 				step = 1;
 				break;
@@ -149,14 +152,11 @@ public class Buyer extends Agent {
 				ACLMessage reply = myAgent.receive(mt);
 				if (reply != null) {
 					// Reply received
-					
-					
-
 					if (reply.getPerformative() == ACLMessage.PROPOSE) {
 						// This is an offer 
 						int price = Integer.parseInt(reply.getContent());
 						BestSellerAgents[i]=reply.getSender();
-						System.out.println("---------------"+i+"----"+BestSellerAgents[i]);
+						//System.out.println("---------------"+i+"----"+BestSellerAgents[i]);
 						i++;
 						if (bestSeller == null || price < bestPrice) {
 							// This is the best offer at present
@@ -184,14 +184,14 @@ public class Buyer extends Agent {
 				} 
 				//cfp1.addReceiver(bestSeller);
 				cfp1.setContent("sold");
-				cfp1.setConversationId("book-trade");
+				cfp1.setConversationId("Ticket-selling");
 				cfp1.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
 				System.out.println("Buyer: can i have a reduction on the book of "+t2+"?");
 				bestSeller= null;
 				repliesCnt=0;
 				myAgent.send(cfp1);
 				// Prepare the template to get proposals
-				mt1 = MessageTemplate.and(MessageTemplate.MatchConversationId("book-trade"),
+				mt1 = MessageTemplate.and(MessageTemplate.MatchConversationId("Ticket-selling"),
 						MessageTemplate.MatchInReplyTo(cfp1.getReplyWith()));
 				step = 3;
 				break;
@@ -199,18 +199,20 @@ public class Buyer extends Agent {
 				// Receive all proposals/refusals from seller agents
 				reply2 = myAgent.receive(mt1);
 				//System.out.println("+++++++reply2 buyer++"+reply2);
-				//System.out.println("+++++++333333333333333333");
-
 				if (reply2 != null) {
 					// Reply received²
-					//System.out.println("+++++++reply2 != null++"+reply2.getSender());
+					System.out.println("+++++++reply="+(reply2.getContent()));
+
+
 
 					if (reply2.getPerformative() == ACLMessage.PROPOSE) {
+
 						// This is an offer 
 						int price = Integer.parseInt(reply2.getContent());
 						//System.out.println("++++++++price+++++"+price);
 						
 						if (bestSeller == null || price < nbestPrice) {
+
 							// This is the best offer at present
 							nbestPrice = price;
 							bestSeller = reply2.getSender();
@@ -234,11 +236,11 @@ public class Buyer extends Agent {
 				ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 				order.addReceiver(bestSeller);
 				order.setContent(t2);
-				order.setConversationId("book-trade");
+				order.setConversationId("Ticket-selling");
 				order.setReplyWith("order"+System.currentTimeMillis());
 				myAgent.send(order);
 				// Prepare the template to get the purchase order reply
-				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("book-trade"),
+				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Ticket-selling"),
 						MessageTemplate.MatchInReplyTo(order.getReplyWith()));
 				step = 5;
 				break;
@@ -277,12 +279,12 @@ public class Buyer extends Agent {
 		}
 	}
 	
-	public void updateCatalogues(final String From,final String To,final int Price) {
+	public void updateCatalogues(final String From,final String To,final String Departure_Date,final int Price) {
 		
 		addBehaviour(new OneShotBehaviour() {
 			public void action() {
 				
-				t1 = new Ticket(From,To,Price);
+				t1 = new Ticket(From,To,Departure_Date,Price);
 				System.out.println(getAID().getName().split("@")[0]+"   "+"New Ticket : from: "+From+"  To: "+To+"  price:"+Price+"   inserted into catalogues.");
 				setup0();
 				

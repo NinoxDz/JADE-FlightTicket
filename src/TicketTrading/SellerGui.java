@@ -45,9 +45,12 @@ public class SellerGui extends JFrame {
 		p.add(new JLabel("Departure Date:"));
 		SpinnerModel model1 = new SpinnerDateModel();
 		JSpinner spinner = new JSpinner(model1);
+		spinner.setEditor(new JSpinner.DateEditor(spinner,"dd-MMM-yyyy HH:mm:ss"));
+
 		p.add(spinner);
 		
-		
+		//titleFieldFrom.setText("lyon");
+		//titleFieldTo.setText("paris");
 		p.add(new JLabel("Price:"));
 		priceField = new JTextField(15);
 		p.add(priceField);

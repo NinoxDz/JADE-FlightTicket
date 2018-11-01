@@ -31,7 +31,7 @@ public class BuyerGui extends JFrame {
 		
 		myAgent = a;
 		JPanel p = new JPanel();
-		p.setLayout(new GridLayout(3, 2));
+		p.setLayout(new GridLayout(4, 2));
 		p.add(new JLabel("From:"));
 		titleFieldFrom = new JTextField(15);
 		p.add(titleFieldFrom);
@@ -42,16 +42,19 @@ public class BuyerGui extends JFrame {
 		p.add(titleFieldTo);
 		
 		
-		/*p.add(new JLabel("Departure Date:"));
+		p.add(new JLabel("Departure Date:"));
 		SpinnerModel model1 = new SpinnerDateModel();
 		JSpinner spinner = new JSpinner(model1);
-		p.add(spinner);*/
+		spinner.setEditor(new JSpinner.DateEditor(spinner,"dd-MMM-yyyy HH:mm:ss"));
+		p.add(spinner);
 		
 		
 		p.add(new JLabel("Price:"));
 		priceField = new JTextField(15);
 		p.add(priceField);
 		
+		//titleFieldFrom.setText("lyon");
+		//titleFieldTo.setText("paris");
 		getContentPane().add(p, BorderLayout.CENTER);
 		
 		JButton addButton = new JButton("Add");
@@ -60,10 +63,10 @@ public class BuyerGui extends JFrame {
 				try {
 					String From = titleFieldFrom.getText().trim();
 					String To = titleFieldTo.getText().trim();
-					//String Departure_Date = spinner.getValue().toString();
+					String Departure_Date = spinner.getValue().toString();
 					String price = priceField.getText().trim();
 					
-					myAgent.updateCatalogues(From,To, Integer.parseInt(price));
+					myAgent.updateCatalogues(From,To,Departure_Date, Integer.parseInt(price));
 					//titleField.setText("");
 					priceField.setText("");
 
